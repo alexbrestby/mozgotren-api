@@ -63,16 +63,16 @@ class UserController {
   async login(req, res) {
     try {
       const { username, password, email } = req.body
-      const user = await User.findOne({ username })
+      const user = await User.findOne({ email })
       if (!user) {
-        return res.status(400).json({ message: `Пользователь ${username} не найден` })
+        return res.status(400).json({ message: `Пользователь с email <b>${email}</b> не найден` })
       }
       const validPassword = bcrypt.compareSync(password, user.password)
       if (!validPassword) {
         return res.status(400).json({ message: `Введен неверный пароль` })
       }
       const token = generateAccessToken(user._id, user.email)
-      return res.json({ token })
+      return res.json({ token, user: user.username })
     } catch (e) {
       console.log(e)
       res.status(400).json({ message: 'Login error' })
