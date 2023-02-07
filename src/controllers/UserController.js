@@ -2,7 +2,8 @@ require("dotenv").config();
 const User = require("../models/User.js");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { validationResult } = require('express-validator')
+const { validationResult } = require('express-validator');
+const session = require('express-session');
 
 const generateAccessToken = (id, email) => {
   const payload = {
@@ -62,7 +63,7 @@ class UserController {
 
   async login(req, res) {
     try {
-      const { username, password, email } = req.body
+      const { password, email } = req.body
       const user = await User.findOne({ email })
       if (!user) {
         return res.status(400).json({ message: `Пользователь с email <b>${email}</b> не найден` })
@@ -71,11 +72,26 @@ class UserController {
       if (!validPassword) {
         return res.status(400).json({ message: `Введен неверный пароль` })
       }
-      const token = generateAccessToken(user._id, user.email)
-      return res.json({ token, user: user.username })
+      // const token = generateAccessToken(user._id, user.email)
+      // return res.json({ token, user: user.username })
+      req.session.user = { username: user.username };
+      return res.json({ messsage: 'Вы вошли в систему', user: user.username });
     } catch (e) {
       console.log(e)
       res.status(400).json({ message: 'Login error' })
+    }
+  }
+
+  async checkRegistration(req, res) {
+    try {
+      if (req.session.user) {
+        return res.json({ message: 'You are authenticated', status: true, user: req.session.user });
+      } else {
+        return res.json({ message: 'You are not authenticated', status: false, user: '' });
+      }
+    } catch (e) {
+      console.log(e)
+      res.status(400).json({ message: 'Check registration error' })
     }
   }
 }
