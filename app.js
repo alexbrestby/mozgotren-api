@@ -2,9 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const router = require("./src/router/router");
-const MongoStore = require('connect-mongo');
+// const MongoStore = require('connect-mongo');
 const PORT = process.env.PORT ?? 5000;
-const session = require("express-session");
+// const session = require("express-session");
 const cors = require('cors');
 
 const app = express();
@@ -25,20 +25,7 @@ app.use(
     credentials: true,
   })
 );
-
 app.use(express.json());
-
-app.use(
-  session({
-    secret: process.env.SECRET,
-    key: process.env.COOKIE_NAME,
-    resave: false,
-    saveUninitialized: false,
-    cookie: { maxAge: null },
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: 'userSession', })
-  })
-);
-
 app.use("/", router);
 
 const db = mongoose.connection;
