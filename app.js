@@ -2,9 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const router = require("./src/router/router");
-// const MongoStore = require('connect-mongo');
 const PORT = process.env.PORT ?? 5000;
-// const session = require("express-session");
 const cors = require('cors');
 
 const app = express();
@@ -16,15 +14,23 @@ app.use((req, res, next) => {
   next()
 });
 
-//app.set('trust proxy', 1) // on netlify
+const whiteList = [
+  "http://localhost:8080",
+  "https://mozgotren-clone.netlify.app",
+];
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whiteList.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
 
-app.use(
-  cors({
-    origin: "http://localhost:8080",
-    // origin: "http://mozgotren-clone.netlify.app",
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
+app.options('*', cors());
 app.use(express.json());
 app.use("/", router);
 
@@ -38,11 +44,11 @@ const start = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
     })
-    app.listen(PORT, () => console.log(`server started on port ${PORT}`))
+    app.listen(PORT, () => console.log(`server started on port ${PORT}`));
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
 }
 

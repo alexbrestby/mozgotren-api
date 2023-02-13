@@ -4,13 +4,15 @@ const UserController = require('../controllers/UserController.js');
 
 const router = new Router();
 
-// router.get('/users', UserController.getAll);
-// router.get('/users/:id', UserController.getOne);
+// authentication routes
 router.post('/check-registration', UserController.checkRegistration);
+router.post('/login', UserController.login);
 router.post('/registration', [
   check('username', 'Имя пользователя не должно быть пустым').notEmpty(),
   check('password', 'Пароль не может быть менее 6 символов').isLength({ min: 6, max: 20 }),
 ], UserController.registration);
-router.post('/login', UserController.login);
+
+// user data routes
+router.post('/get-user', UserController.getUserData);
 
 module.exports = router;
