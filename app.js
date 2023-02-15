@@ -7,6 +7,7 @@ const cors = require('cors');
 
 const app = express();
 
+
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
@@ -29,8 +30,9 @@ const corsOptions = {
   credentials: true,
 };
 
+app.use('/uploads', express.static('uploads'));
 app.use(cors(corsOptions));
-app.options('*', cors());
+app.options(cors());
 app.use(express.json());
 app.use("/", router);
 

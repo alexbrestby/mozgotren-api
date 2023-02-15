@@ -12,7 +12,9 @@ const UserData = new Schema({
   birdthDate: { type: String, default: null },
   profession: { type: String, default: null },
   accStatus: { type: String, default: 'Базовый' },
-  prefferedGame: { type: String, default: null }
+  prefferedGame: { type: String, default: null },
+  imagePath: { type: String, default: null },
+  country: { type: String, default: null }
 })
 
 module.exports = model('UserData', UserData);

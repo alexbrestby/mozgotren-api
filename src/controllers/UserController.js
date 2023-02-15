@@ -3,6 +3,7 @@ const User = require("../models/User.js");
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const UserData = require("../models/UserData");
+const { findByIdAndUpdate } = require("../models/User.js");
 
 class UserController {
 
@@ -116,6 +117,75 @@ class UserController {
       return res.json(userData);
     } catch (e) {
       res.status(500).json(e);
+    }
+  }
+
+  async uploadUserData(req, res) {
+    try {
+      const { userId, username, userProfession, country, birdthDate } = req.body;
+      console.log(req.body);
+      console.log(req.file);
+      const responseArray = [];
+      if (typeof username !== 'undefined') {
+        responseArray.push('имя пользователя обновлено');
+        await User.findByIdAndUpdate(
+          userId,
+          {
+            $set: { username }
+          });
+      }
+      if (req.file !== undefined && req.file.fieldname === 'image') {
+        const { path } = req.file;
+        responseArray.push('фотография профиля обновлена');
+        await UserData.updateOne(
+          { userId },
+          {
+            $set: { imagePath: path }
+          });
+      }
+      if (typeof userProfession !== 'undefined') {
+        responseArray.push('профессия пользователя обновлена');
+        await UserData.updateOne(
+          { userId },
+          {
+            $set: { profession: userProfession }
+          });
+
+      }
+      if (typeof country !== 'undefined') {
+        responseArray.push('страна обновлена');
+        await UserData.updateOne(
+          { userId },
+          {
+            $set: { country: country }
+          });
+      }
+      if (typeof birdthDate !== 'undefined') {
+        responseArray.push('день рождения обновлен');
+        await UserData.updateOne(
+          { userId },
+          {
+            $set: { birdthDate: birdthDate },
+          });
+      }
+      res.send(responseArray);
+    } catch (error) {
+      res.status(500).json({ message: 'form handle error' });
+    }
+  }
+
+  async updatePassword(req, res) {
+    const { ssid, password } = req.body;
+    const hashPassword = bcrypt.hashSync(password, 7);
+    try {
+      const result = await User.updateOne({ ssid }, { $set: { password: hashPassword } });
+      if (result.modifiedCount > 0) {
+        res.json({
+          message: "Пароль успешно обновлен",
+        });
+      }
+    } catch (err) {
+      res.status(500).json({ message: 'password update error' });
     }
   }
 }
