@@ -2,6 +2,7 @@ const Router = require('express');
 const path = require('path')
 const { check } = require('express-validator');
 const UserController = require('../controllers/UserController.js');
+const GameController = require('../controllers/GameController.js');
 const multer = require("multer");
 
 const router = new Router();
@@ -30,5 +31,9 @@ router.post('/registration', [
 router.post('/update-password', UserController.updatePassword);
 router.post('/get-user', UserController.getUserData);
 router.post('/upload-userdata', upload.single('image'), UserController.uploadUserData);
+
+// game data routes
+router.post('/send-result', GameController.sendResult);
+router.get('/ratings', GameController.getRatings)
 
 module.exports = router;

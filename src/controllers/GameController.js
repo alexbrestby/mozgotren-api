@@ -1,28 +1,44 @@
 require("dotenv").config();
-const User = require("../models/User.js");
 const GameData = require("../models/GameData");
-const { validationResult } = require('express-validator');
 
 class GameController {
 
-  async getAll(req, res, next) {
+  async sendResult(req, res) {
+    const {
+      userId,
+      gameId,
+      score,
+      time,
+      date,
+      rightAnswers,
+      wrongAnswers,
+    } = req.body;
+    console.log(req.body);
     try {
-      const users = await User.find();
-      return res.json(users);
-    } catch (e) {
-      res.status(500).json(e)
+      const gameResult = new GameData({
+        userId,
+        gameId,
+        score,
+        time,
+        date,
+        rightAnswers,
+        wrongAnswers,
+      });
+      await gameResult.save();
+      console.log(gameResult);
+      return res.json({ message: 'Игра записана', result: gameResult });
+    } catch (err) {
+      res.status(500).json({ message: 'password update error' });
     }
   }
 
-  async getOne(req, res, next) {
+  async getRatings(req, res) {
     try {
-      const user = await User.findOne({ _id: req.params.id });
-      if (!user) {
-        return res.status(404).send();
-      }
-      return res.json(user)
-    } catch (e) {
-      res.status(500).json(e);
+      const rating = await GameData.find({});
+      return res.json({ rating });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send('Error retrieving ratings from database');
     }
   }
 }
