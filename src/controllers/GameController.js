@@ -1,5 +1,6 @@
 require("dotenv").config();
 const GameData = require("../models/GameData");
+const User = require("../models/User");
 
 class GameController {
 
@@ -25,19 +26,30 @@ class GameController {
         wrongAnswers,
       });
       await gameResult.save();
-      console.log(gameResult);
       return res.json({ message: 'Игра записана', result: gameResult });
     } catch (err) {
-      res.status(500).json({ message: 'password update error' });
+      res.status(500).json({ message: 'game result update error' });
     }
   }
 
   async getRatings(req, res) {
     try {
-      const rating = await GameData.find({});
-      return res.json({ rating });
+      await GameData.aggregate([
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user'
+          }
+        }
+      ], function (err, result) {
+        if (err) {
+          console.log(err);
+        }
+        return res.json({ result });
+      });
     } catch (error) {
-      console.log(error);
       res.status(500).send('Error retrieving ratings from database');
     }
   }
