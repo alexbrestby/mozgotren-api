@@ -1,5 +1,6 @@
 require("dotenv").config();
 const User = require("../models/User.js");
+const GameData = require("../models/GameData.js");
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const UserData = require("../models/UserData");
@@ -109,12 +110,19 @@ class UserController {
 
   async getUserData(req, res) {
     try {
-      const { ssid } = req.body;
-      const userData = await UserData.findOne({ ssid })
+      let { ssid } = req.body;
+      const userData = await UserData.find({ userId: ssid });
       if (!ssid) {
         return res.status(404).send();
       }
-      return res.json(userData);
+      // GameData.find({ userId: ssid })
+      //   .sort({ time: -1 })
+      //   .exec(function (err, results) {
+      //     if (err) return console.error(err);
+      //     console.log(results);
+      //   });
+      console.log(userData);
+      return res.json(userData[0]);
     } catch (e) {
       res.status(500).json(e);
     }
@@ -137,16 +145,16 @@ class UserController {
       if (req.file !== undefined && req.file.fieldname === 'image') {
         const { path } = req.file;
         responseArray.push('фотография профиля обновлена');
-        await UserData.updateOne(
-          { userId },
+        await UserData.findOneAndUpdate(
+          { userId: userId },
           {
             $set: { imagePath: path }
           });
       }
       if (typeof userProfession !== 'undefined') {
         responseArray.push('профессия пользователя обновлена');
-        await UserData.updateOne(
-          { userId },
+        await UserData.findOneAndUpdate(
+          { userId: userId },
           {
             $set: { profession: userProfession }
           });
@@ -154,16 +162,16 @@ class UserController {
       }
       if (typeof country !== 'undefined') {
         responseArray.push('страна обновлена');
-        await UserData.updateOne(
-          { userId },
+        await UserData.findOneAndUpdate(
+          { userId: userId },
           {
             $set: { country: country }
           });
       }
       if (typeof birdthDate !== 'undefined') {
         responseArray.push('день рождения обновлен');
-        await UserData.updateOne(
-          { userId },
+        await UserData.findOneAndUpdate(
+          { userId: userId },
           {
             $set: { birdthDate: birdthDate },
           });
@@ -178,12 +186,13 @@ class UserController {
     const { ssid, password } = req.body;
     const hashPassword = bcrypt.hashSync(password, 7);
     try {
-      const result = await User.updateOne({ ssid }, { $set: { password: hashPassword } });
-      if (result.modifiedCount > 0) {
-        res.json({
-          message: "Пароль успешно обновлен",
-        });
-      }
+      console.log(ssid);
+      const result = await User.findByIdAndUpdate(
+        ssid,
+        { $set: { password: hashPassword } });
+      res.json({
+        message: "Пароль успешно обновлен",
+      });
     } catch (err) {
       res.status(500).json({ message: 'password update error' });
     }

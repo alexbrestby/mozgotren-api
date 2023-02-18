@@ -21,7 +21,7 @@ const whiteList = [
 ];
 const corsOptions = {
   origin: function (origin, callback) {
-    if (whiteList.indexOf(origin) !== -1) {
+    if (whiteList.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -30,10 +30,10 @@ const corsOptions = {
   credentials: true,
 };
 
-app.use('/uploads', express.static('uploads'));
 app.use(cors(corsOptions));
 app.options(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 app.use("/", router);
 
 const db = mongoose.connection;
