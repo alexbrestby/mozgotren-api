@@ -115,14 +115,12 @@ class UserController {
       if (!ssid) {
         return res.status(404).send();
       }
-      // GameData.find({ userId: ssid })
-      //   .sort({ time: -1 })
-      //   .exec(function (err, results) {
-      //     if (err) return console.error(err);
-      //     console.log(results);
-      //   });
-      console.log(userData);
-      return res.json(userData[0]);
+      GameData.find({ userId: ssid })
+        .sort({ time: -1 })
+        .exec(function (err, results) {
+          if (err) return console.error(err);
+          return res.json({ userObj: userData[0], prefferedGameId: results[0].gameId, gamesCounter: results.length });
+        });
     } catch (e) {
       res.status(500).json(e);
     }
