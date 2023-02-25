@@ -4,7 +4,6 @@ const GameData = require("../models/GameData.js");
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const UserData = require("../models/UserData");
-const { findByIdAndUpdate } = require("../models/User.js");
 
 class UserController {
 
@@ -119,7 +118,9 @@ class UserController {
         .sort({ time: -1 })
         .exec(function (err, results) {
           if (err) return console.error(err);
-          return res.json({ userObj: userData[0], prefferedGameId: results[0].gameId, gamesCounter: results.length });
+          let gameId = 0;
+          if (results.length > 0) gameId = results[0].gameId;
+          return res.json({ userObj: userData[0], prefferedGameId: gameId, gamesCounter: results.length });
         });
     } catch (e) {
       res.status(500).json(e);

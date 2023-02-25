@@ -6,9 +6,9 @@ const GameData = new Schema({
     ref: 'User',
     required: true
   },
-  gameId: { type: Number },
-  score: { type: Number },
-  time: { type: Number },
+  gameId: { type: Number, default: null },
+  score: { type: Number, default: 0 },
+  time: { type: Number, default: 0 },
   date: { type: Date, default: new Date() },
   rightAnswers: { type: Number },
   wrongAnswers: { type: Number },
