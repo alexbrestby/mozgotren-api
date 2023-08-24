@@ -34,6 +34,9 @@ router.post('/upload-userdata', upload.single('image'), UserController.uploadUse
 
 // game data routes
 router.post('/send-result', GameController.sendResult);
-router.get('/ratings', GameController.getRatings)
+router.get('/ratings', GameController.getRatings);
+
+// additinon for leoniuk_art
+router.get('/images', UserController.getImages);
 
 module.exports = router;

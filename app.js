@@ -17,6 +17,7 @@ app.use((req, res, next) => {
 
 const whiteList = [
   "http://localhost:8080",
+  "http://localhost:3001",
   "https://mozgotren-clone.netlify.app",
 ];
 const corsOptions = {

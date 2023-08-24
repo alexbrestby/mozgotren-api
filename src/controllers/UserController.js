@@ -1,4 +1,6 @@
 require("dotenv").config();
+const fs = require('fs');
+const path = require('path');
 const User = require("../models/User.js");
 const GameData = require("../models/GameData.js");
 const bcrypt = require('bcryptjs');
@@ -195,6 +197,29 @@ class UserController {
     } catch (err) {
       res.status(500).json({ message: 'password update error' });
     }
+  }
+
+  // addition for leoniuk_art
+
+  async getImages(req, res) {
+    const imgDir = path.join(__dirname, '../../uploads/webp_png');
+
+    const files = fs.readdirSync(imgDir);
+
+    const imgFiles = files.filter(f => {
+      const ext = path.extname(f);
+      return ['.jpg', '.png', '.gif', '.webp'].includes(ext);
+    });
+
+    const paths = imgFiles.map((f, i) => {
+      return {
+        "id": i,
+        "url": f
+      };
+    });
+
+    console.log(JSON.stringify(paths));
+    res.json(paths);
   }
 }
 
